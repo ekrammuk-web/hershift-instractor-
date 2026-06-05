@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>herSHIFT 2026 — Presenter Dashboard</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a1628;min-height:100vh;padding:32px 40px 48px;}
+
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:24px;}
+  .logo-lockup{display:flex;align-items:center;gap:8px;}
+  .logo-dot{width:22px;height:22px;background:#fff;border-radius:50%;}
+  .logo-chev{color:#fff;font-size:26px;font-weight:900;line-height:1;}
+  .logo-word{font-size:32px;font-weight:900;letter-spacing:-.02em;line-height:1;}
+  .logo-her{color:#f47c20;}.logo-shift{color:#fff;}
+
+  .top-right{text-align:right;}
+  .session-label{font-size:11px;color:#f47c20;font-weight:800;letter-spacing:.1em;text-transform:uppercase;}
+  .session-time{font-size:22px;font-weight:900;color:#fff;margin-top:2px;}
+
+  .live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(244,124,32,0.15);border:1px solid rgba(244,124,32,0.4);border-radius:20px;padding:6px 14px;margin-bottom:36px;}
+  .live-dot{width:8px;height:8px;background:#f47c20;border-radius:50%;animation:pulse 1.2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .live-text{font-size:12px;font-weight:700;color:#f47c20;letter-spacing:.08em;text-transform:uppercase;}
+  .total-responses{font-size:12px;color:rgba(255,255,255,0.35);margin-left:8px;font-weight:500;}
+
+  .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:36px;}
+
+  .chart-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px 28px 24px;}
+  .chart-title{font-size:11px;font-weight:800;color:rgba(255,255,255,0.4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+  .chart-question{font-size:15px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:24px;}
+
+  .big-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .big-bar-label{font-size:13px;color:rgba(255,255,255,0.55);flex:0 0 130px;line-height:1.3;}
+  .big-bar-track{flex:1;height:32px;background:rgba(255,255,255,0.05);border-radius:6px;overflow:hidden;position:relative;}
+  .big-bar-fill{height:100%;background:linear-gradient(90deg,#1a4fa8,#f47c20);border-radius:6px;transition:width .8s ease;width:0%;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;}
+  .big-bar-pct{font-size:13px;font-weight:800;color:#fff;white-space:nowrap;}
+  .big-bar-count{font-size:13px;color:rgba(255,255,255,0.3);width:32px;text-align:right;font-weight:600;}
+
+  .insight-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .insight-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;}
+  .ins-num{font-size:40px;font-weight:900;color:#f47c20;line-height:1;margin-bottom:4px;}
+  .ins-label{font-size:11px;color:rgba(255,255,255,0.4);font-weight:600;letter-spacing:.06em;text-transform:uppercase;line-height:1.4;}
+
+  .refresh-note{text-align:center;font-size:11px;color:rgba(255,255,255,0.2);margin-top:28px;letter-spacing:.05em;}
+  .stripe{height:4px;background:linear-gradient(90deg,#1a4fa8,#f47c20);border-radius:4px;margin-bottom:28px;}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo-lockup">
+    <div class="logo-dot"></div>
+    <div class="logo-chev">›</div>
+    <div class="logo-word"><span class="logo-her">her</span><span class="logo-shift">SHIFT</span> <span style="font-size:18px;font-weight:500;color:rgba(255,255,255,0.4);">2026</span></div>
+  </div>
+  <div class="top-right">
+    <div class="session-label">Interactive Session</div>
+    <div class="session-time">1:40 PM — Presenter View</div>
+  </div>
+</div>
+
+<div class="stripe"></div>
+
+<div class="live-badge">
+  <div class="live-dot"></div>
+  <span class="live-text">Live Results</span>
+  <span class="total-responses" id="totalLabel">0 responses so far</span>
+</div>
+
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-title">Question 1</div>
+    <div class="chart-question">How confident are you using AI tools in your day-to-day work right now?</div>
+    <div id="confBars"></div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Question 2</div>
+    <div class="chart-question">After the executive panel — where do you feel you need the most growth?</div>
+    <div id="growthBars"></div>
+  </div>
+</div>
+
+<div class="insight-row">
+  <div class="insight-card">
+    <div class="ins-num" id="avgConf">—</div>
+    <div class="ins-label">Average AI confidence score out of 5</div>
+  </div>
+  <div class="insight-card">
+    <div class="ins-num" id="topConf">—</div>
+    <div class="ins-label">Most common confidence level in the room</div>
+  </div>
+  <div class="insight-card">
+    <div class="ins-num" id="topGrowth" style="font-size:20px;padding-top:8px;">—</div>
+    <div class="ins-label">Top growth area selected by the room</div>
+  </div>
+</div>
+
+<div class="refresh-note">Auto-refreshes every 4 seconds · Open this page on your presenter screen · Attendees use the main QR code link</div>
+
+<script>
+const STORAGE_KEY = 'hershift_poll_v2';
+const confLabels = ['Not at all','Slightly','Sometimes','Mostly','Very confident'];
+const growthKeys = [
+  'Being more visible to leadership during change',
+  'Clearly communicating my value and impact',
+  'Demonstrating adaptability in a rapidly changing workplace',
+  'Showing more initiative and leadership presence',
+  'Building my confidence and skills with AI tools'
+];
+const growthShort = [
+  'Visibility with leadership',
+  'Communicating value & impact',
+  'Adapting to change',
+  'Initiative & leadership presence',
+  'Building AI skills & confidence'
+];
+
+function getVotes() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {conf:{},growth:{}}; }
+  catch(e) { return {conf:{},growth:{}}; }
+}
+
+function render() {
+  const v = getVotes();
+  const confEl = document.getElementById('confBars');
+  const growthEl = document.getElementById('growthBars');
+
+  const confTot = Math.max(Object.values(v.conf).reduce((a,b)=>a+b,0),1);
+  const realConfTot = Object.values(v.conf).reduce((a,b)=>a+b,0);
+  confEl.innerHTML = '';
+  let weightedSum = 0, maxConfCnt = 0, topConfNum = '—';
+  for(let i=1;i<=5;i++){
+    const cnt = v.conf[i]||0;
+    const pct = Math.round((cnt/confTot)*100);
+    weightedSum += i*cnt;
+    if(cnt>maxConfCnt){maxConfCnt=cnt;topConfNum=i;}
+    confEl.innerHTML += `<div class="big-bar-row">
+      <div class="big-bar-label">${i} — ${confLabels[i-1]}</div>
+      <div class="big-bar-track"><div class="big-bar-fill" style="width:${pct}%"><span class="big-bar-pct">${pct>8?pct+'%':''}</span></div></div>
+      <div class="big-bar-count">${cnt}</div>
+    </div>`;
+  }
+  const avg = realConfTot>0 ? (weightedSum/realConfTot).toFixed(1) : '—';
+  document.getElementById('avgConf').textContent = avg;
+  document.getElementById('topConf').textContent = topConfNum==='—'?'—':topConfNum+'/5';
+
+  const growthTot = Math.max(Object.values(v.growth).reduce((a,b)=>a+b,0),1);
+  growthEl.innerHTML = '';
+  let maxGCnt=0, topG='—';
+  growthKeys.forEach((k,idx) => {
+    const cnt = v.growth[k]||0;
+    const pct = Math.round((cnt/growthTot)*100);
+    if(cnt>maxGCnt){maxGCnt=cnt;topG=growthShort[idx];}
+    growthEl.innerHTML += `<div class="big-bar-row">
+      <div class="big-bar-label">${growthShort[idx]}</div>
+      <div class="big-bar-track"><div class="big-bar-fill" style="width:${pct}%"><span class="big-bar-pct">${pct>8?pct+'%':''}</span></div></div>
+      <div class="big-bar-count">${cnt}</div>
+    </div>`;
+  });
+  document.getElementById('topGrowth').textContent = topG;
+  document.getElementById('totalLabel').textContent = realConfTot + (realConfTot===1?' response':' responses') + ' so far';
+}
+
+render();
+setInterval(render, 4000);
+</script>
+</body>
+</html>
